@@ -1,0 +1,320 @@
+namespace DrzewoBSTNauka
+{
+    internal class Wezel
+    {
+        public int wartosc;
+        public Wezel lewe;
+        public Wezel prawe;
+        public Wezel rodzic;
+
+        public Wezel(int wartosc)
+        {
+            this.wartosc = wartosc;
+            lewe = null;
+            prawe = null;
+            rodzic = null;
+        }
+    } 
+    internal class DrzewoBstNauka
+    {
+        private Wezel korzen;
+
+        public DrzewoBstNauka()
+        {
+            korzen = null;
+        }
+
+        public void dodaj(int wartosc)
+        {
+            {
+                Wezel nowy = new Wezel(wartosc);
+
+                if (korzen == null)
+                {
+                    korzen = nowy;
+                    return;
+                }
+
+                Wezel obecny = korzen;
+                Wezel rodzic = null;
+
+                // 1. Szukamy miejsca dla nowego węzła
+                while (obecny != null)
+                {
+                    rodzic = obecny;
+                    if (wartosc < obecny.wartosc)
+                    {
+                        obecny = obecny.lewe;
+                    }
+                    else
+                    {
+                        obecny = obecny.prawe;
+                    }
+                }
+
+                // 2. Podpinamy nowy węzeł pod znalezionego rodzica
+                nowy.rodzic = rodzic;
+                if (wartosc < rodzic.wartosc)
+                {
+                    rodzic.lewe = nowy;
+                }
+                else
+                {
+                    rodzic.prawe = nowy;
+                }
+            }
+        }
+
+        public void usun(int wartosc)
+        {
+            korzen = Remove(korzen, wartosc);
+        }
+
+        private Wezel Remove(Wezel root, int wartosc)
+        {
+            if (root == null)
+                return null;
+
+            if (wartosc < root.wartosc)
+            {
+                root.lewe = Remove(root.lewe, wartosc);
+                if (root.lewe != null)
+                    root.lewe.rodzic = root;
+            }
+            else if (wartosc > root.wartosc)
+            {
+                root.prawe = Remove(root.prawe, wartosc);
+                if (root.prawe != null)
+                    root.prawe.rodzic = root;
+            }
+            else
+            {
+                // 1. brak dzieci
+                if (root.lewe == null && root.prawe == null)
+                    return null;
+
+                // 2. jedno dziecko
+                if (root.lewe == null)
+                {
+                    root.prawe.rodzic = root.rodzic;
+                    return root.prawe;
+                }
+                else if (root.prawe == null)
+                {
+                    root.lewe.rodzic = root.rodzic;
+                    return root.lewe;
+                }
+
+                // 3. dwoje dzieci
+                Wezel nastepca = getNastepca(root.prawe);
+                root.wartosc = nastepca.wartosc;
+                root.prawe = Remove(root.prawe, nastepca.wartosc);
+                if (root.prawe != null)
+                    root.prawe.rodzic = root;
+            }
+
+            return root;
+        }
+
+        private Wezel getNastepca(Wezel wezel)
+        {
+            while (wezel.lewe != null)
+                wezel = wezel.lewe;
+
+            return wezel;
+        }
+        public string wypiszInOrder()
+        {
+            return InOrder(korzen);
+        }
+        private string InOrder(Wezel rodzic)
+        {
+            if(rodzic == null)
+            {
+                return "";
+            }
+            return InOrder(rodzic.lewe) + rodzic.wartosc + " " + InOrder(rodzic.prawe);
+        }
+
+        public string wypiszPreOrder()
+        {
+            return PreOrder(korzen);
+        }
+
+        private string PreOrder(Wezel rodzic)
+        {
+            if(rodzic == null)
+            {
+                return "";
+            }
+            return rodzic.wartosc + " " + PreOrder(rodzic.lewe) + PreOrder(rodzic.prawe);
+        }
+
+        public string wypiszPostOrder()
+        {
+            return PostOrder(korzen);
+        }
+        private string PostOrder(Wezel rodzic)
+        {
+            if(rodzic == null)
+            {
+                return "";
+            }
+            return PostOrder(rodzic.lewe) + PostOrder(rodzic.prawe) + rodzic.wartosc + " ";
+        }
+
+        public string wypiszWszerz()
+        {
+            if(korzen == null)
+            {
+                return null;
+            }
+
+            string wynik = "";
+
+            Queue<Wezel> kolejka = new Queue<Wezel>();
+
+            kolejka.Enqueue(korzen);
+
+            while (kolejka.Count > 0)
+            {
+                Wezel current = kolejka.Dequeue();
+
+                wynik += current.wartosc + " ";
+                if(current.lewe != null)
+                {
+                    kolejka.Enqueue(current.lewe);
+                }
+                if(current.prawe != null)
+                {
+                    kolejka.Enqueue(current.prawe);
+                }
+            }
+            return wynik;
+        }
+
+        public string ZigZag()
+        {
+            if (korzen == null)
+            {
+                return "";
+            }
+            string wynik = "";
+            Queue<Wezel> kolejka = new Queue<Wezel>();
+
+            kolejka.Enqueue(korzen);
+            bool odwrot = false;
+
+            while(kolejka.Count > 0)
+            {
+                int ileLiczb = kolejka.Count;
+
+                List<int> liczbyzPoziomu = new List<int>();
+
+                for(int i = 0;i < ileLiczb; i++)
+                {
+                    Wezel current = kolejka.Dequeue();
+
+                    liczbyzPoziomu.Add(current.wartosc);
+
+                    if(current.lewe != null)
+                    {
+                        kolejka.Enqueue(current.lewe);
+
+                    }
+                    if(current.prawe != null)
+                    {
+                        kolejka.Enqueue(current.prawe);
+                    }
+                }
+
+                if (odwrot)
+                {
+                    liczbyzPoziomu.Reverse();
+                }
+
+                foreach(int liczba in liczbyzPoziomu)
+                {
+                    wynik += liczba + " ";
+                }
+
+                odwrot = !odwrot;
+            }
+            return wynik;
+        }
+
+
+
+
+    }
+
+
+}
+=================================================================
+namespace DrzewoBSTNauka
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+        DrzewoBstNauka drzewo = new DrzewoBstNauka();
+
+        private void Dodaj_Click(object sender, EventArgs e)
+        {
+            int liczba = int.Parse(textBoxWpisz.Text);
+            drzewo.dodaj(liczba);
+            label1.Text = "InOrder : " + drzewo.wypiszInOrder();
+            label2.Text = "PreOrder : " + drzewo.wypiszPreOrder();
+            label3.Text = "PostOrder : " + drzewo.wypiszPostOrder();
+            label4.Text = "Wszerz :  " + drzewo.wypiszWszerz();
+            label5.Text = "ZigZag : " + drzewo.ZigZag();
+            textBoxWpisz.Clear();
+
+        }
+
+        private void Usun_Click(object sender, EventArgs e)
+        {
+            int liczba = int.Parse(textBoxWpisz.Text);
+            drzewo.usun(liczba);
+            label1.Text = "InOrder : " + drzewo.wypiszInOrder();
+            label2.Text = "PreOrder : " + drzewo.wypiszPreOrder();
+            label3.Text = "PostOrder : " + drzewo.wypiszPostOrder();
+            label4.Text = "Wszerz :  " + drzewo.wypiszWszerz();
+            label5.Text = "ZigZag : " + drzewo.ZigZag();
+            textBoxWpisz.Clear();
+        }
+
+        private void textBoxWpisz_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+    }
+}
+
