@@ -1,0 +1,148 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Algorytm_Kruskala_Minimalne_Drzewo_Rozpinające
+{
+    
+    internal class Minimalne_drzewo_rozpinające
+    {
+
+    }
+    public class Edge
+    {
+        public double Length { get; private set; }
+        public int Point1 { get; private set; }
+        public int Point2 { get; private set; }
+
+        public Edge(int pt1, int pt2, double length)
+        {
+            Point1 = pt1;
+            Point2 = pt2;
+            Length = length;
+        }
+
+        public override string ToString()
+        {
+            return String.Format("({0}-{1})={2:0.00}", Point1, Point2, Length);
+        }
+    }
+    public class Kruskal
+    {
+        public Edge[] Result { get; private set; }
+        public double Span { get; private set; }
+        public Kruskal(Point[] points)
+        {
+            int edgesArrayLength = 0;
+            
+            for (int i = points.Length - 1; i > 0; i--)
+                edgesArrayLength += i;
+            Edge[] edges = new Edge[edgesArrayLength];
+
+            
+            for (int i = 0, index = 0; i < points.Length; i++)
+                for (int j = i + 1; j < points.Length; j++)
+                {
+                    int dx = points[i].X - points[j].X;
+                    int dy = points[i].Y - points[j].Y;
+                    edges[index] = new Edge(i, j, Math.Sqrt(dx * dx + dy * dy));
+                    index++;
+                }
+
+            var sortEdges = edges.OrderBy(a => a.Length);
+            
+            int[] sets = new int[points.Length];
+            Result = new Edge[points.Length - 1];
+            int processedEdges = 0;
+            foreach (var edge in sortEdges)
+            {
+                
+                if (processedEdges == points.Length - 1)
+                    break;
+
+                
+                if (sets[edge.Point1] == 0 || sets[edge.Point1] != sets[edge.Point2])
+                {
+                    Result[processedEdges] = edge;
+                    Span += edge.Length;
+                    processedEdges++;
+                    
+                    if (sets[edge.Point1] != 0 || sets[edge.Point2] != 0)
+                    {
+                        int set1 = sets[edge.Point1];
+                        int set2 = sets[edge.Point2];
+                        
+                        for (int i = 0; i < points.Length; i++)
+                            if (sets[i] != 0 && (sets[i] == set1 || sets[i] == set2))
+                                sets[i] = processedEdges;
+                    }
+                    
+                    sets[edge.Point1] = processedEdges;
+                    sets[edge.Point2] = processedEdges;
+                }
+            }
+        }
+    }
+    
+
+
+}
+===============================================================================
+namespace Algorytm_Kruskala_Minimalne_Drzewo_Rozpinające
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void lblSpan_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnCalculate_Click(object sender, EventArgs e)
+        {
+            {
+                
+                Point[] points = new Point[]
+                {
+                new Point(0,0),
+                new Point(3,0),
+                new Point(5,0),
+                new Point(0,1),
+                new Point(2,1),
+                new Point(5,1),
+                new Point(1,2),
+                new Point(3,2),
+                new Point(2,4),
+                new Point(6,4)
+                };
+
+                
+                Kruskal kruskal = new Kruskal(points);
+
+                
+                lstResults.Items.Clear();
+                foreach (var edge in kruskal.Result)
+                {
+                    lstResults.Items.Add(edge.ToString());
+                }
+
+                lblSpan.Text = string.Format("Całkowita rozpiętość: {0:0.00}", kruskal.Span);
+
+               
+                this.Invalidate();
+            }
+        }
+
+        private void lstResults_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+    }
+
+}
