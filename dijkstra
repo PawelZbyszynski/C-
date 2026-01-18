@@ -1,0 +1,74 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Algorytm_Dijkstry
+{
+    public class dane
+    {
+        public int dystans;
+        public int poprzednik;
+        public bool odwiedzony;
+    }
+    public class AlgorytmDijkstry
+    {
+        
+    static int szukajMinimum(dane[] tab)
+        {
+            int min = -1;
+            int mindist = int.MaxValue;
+            for (int i = 0; i < tab.Length; i++)
+            {
+                if (!tab[i].odwiedzony && tab[i].dystans < mindist)
+                {
+                    min = i;
+                    mindist = tab[i].dystans;
+                }
+            }
+            return min;
+        }
+
+        public static dane[] Dijkstra(int[,] macierz, int start)
+        {
+            int n = macierz.GetLength(0);
+            dane[] tab = new dane[n];
+
+            for (int i = 0; i < n; i++)
+            {
+            
+                tab[i] = new dane();
+                tab[i].dystans = (i == start) ? 0 : int.MaxValue;
+                tab[i].odwiedzony = false;
+                tab[i].poprzednik = -1;
+            }
+
+            int u = start;
+            while (u != -1)
+            {
+                tab[u].odwiedzony = true;
+
+                
+                if (tab[u].dystans == int.MaxValue) break;
+
+                for (int i = 0; i < n; i++)
+                {
+                   
+                    if (macierz[u, i] > 0 && !tab[i].odwiedzony)
+                    {
+                        
+                        if (tab[u].dystans + macierz[u, i] < tab[i].dystans)
+                        {
+                            tab[i].dystans = tab[u].dystans + macierz[u, i];
+                            tab[i].poprzednik = u;
+                        }
+                    }
+                }
+                u = szukajMinimum(tab);
+            }
+            return tab;
+        }
+
+    }
+}   
