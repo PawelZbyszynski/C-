@@ -72,3 +72,58 @@ namespace Algorytm_Dijkstry
 
     }
 }   
+=======================================================
+namespace Algorytm_Dijkstry
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void btnOblicz_Click(object sender, EventArgs e)
+        {
+            
+            int[,] macierz = {
+            { 0, 4, 1, 0, 0 },
+            { 4, 0, 2, 2, 7 },
+            { 1, 2, 0, 4, 0 },
+            { 0, 2, 4, 0, 1 },
+            { 0, 7, 0, 1, 0 }
+            };
+
+            
+            int start = (int)numStart.Value;
+
+            
+            dane[] wyniki = AlgorytmDijkstry.Dijkstra(macierz, start);
+
+            
+            txtWyniki.Clear();
+            txtWyniki.AppendText($"--- Wyniki dla węzła startowego {start} ---\r\n\r\n");
+
+            for (int i = 0; i < wyniki.Length; i++)
+            {
+                if (wyniki[i].dystans == int.MaxValue)
+                {
+                    txtWyniki.AppendText($"Punkt {i}: Brak połączenia\r\n");
+                }
+                else
+                {
+                    txtWyniki.AppendText($"Punkt {i}: Dystans = {wyniki[i].dystans} (Poprzednik: {wyniki[i].poprzednik})\r\n");
+                }
+            }
+        }
+
+        private void numStart_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtWyniki_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+    }
+}
